@@ -144,12 +144,8 @@ void solve() {
 			partner[male] = woman;
 
 		}
-		male = (male + 2) % (n * 2);
-		for (int i = 0; i < n; i++) {
-			if (partner[male] != -1)
-				male = (male + 2) % (n * 2);
-		}
-	}
+		
+		// DO SHIT
 	
 }
 
