@@ -1,0 +1,4 @@
+/home/df/LTH/Year2/Algodat/algdes-labs/matching/src/main.cpp: In function ‘int main()’:
+/home/df/LTH/Year2/Algodat/algdes-labs/matching/src/main.cpp:24:3: error: ‘interger’ was not declared in this scope
+   interger amount;
+   ^~~~~~~~

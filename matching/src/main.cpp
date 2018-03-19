@@ -21,7 +21,7 @@ using namespace std;
 
 int main () {
   string line;
-  interger amount;
+  int amount;
   ifstream myfile ("../data/sm-bbt-in.txt");
   if (myfile.is_open())
   {
@@ -29,11 +29,11 @@ int main () {
     {
       if (line.find("#") != std::string::npos)
       {
-        std::cout << "test" << '\n';
+        std::cout << "test" << endl;
       }
       else
       {
-        cout << line << '\n';
+        cout << line << endl;
       }
     }
     myfile.close();
