@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <vector>
 using namespace std;
@@ -23,76 +24,126 @@ using namespace std;
 class Person
 {
 	public:
-    Person(string pname, int pid);
-		Person(string pname, std::vector<int> pref);
+    Person();
+		Person(string pname, std::vector<int> pref, int pid);
 		string getName() const;
 		void setName( string name );
 		void setPref( std::vector<int> pref );
     void setId( int id );
+    int getId() const;
 		std::vector<int> getPref() const;
     void addPref(int n);
 		void print() const;
+    bool compare(int current, int candidate);
+    int nextId();
 
 	private:
     int id;
 		string name;
 		std::vector<int> pref; //If 0 is unknown.
+    int at;
 };
-
-Person::Person(string pname, int pid)
-{
-  name = pname;
-  id = pid;
+Person::Person(){
+  id=0;
 }
-
-Person::Person (string pname, std::vector<int> ppref)
-{
+Person::Person (string pname, std::vector<int> ppref, int pid){
 	name = pname;
 	pref = ppref;
+  id = pid;
+  at = 0;
 }
-
-void Person::setId( int id )
-{
+void Person::setId( int id ){
   this->id = id;
 }
-
-string Person::getName() const
-{
+int Person::getId() const{
+  return this->id;
+}
+string Person::getName() const{
 	return name;
 }
-
-std::vector<int> Person::getPref() const
-{
+std::vector<int> Person::getPref() const{
 	return pref;
 }
-
-void Person::print() const
-{
-	cout << name << endl;
+void Person::print() const{
+	cout << name << ' ';
+  for (auto pre : pref)
+    std::cout << pre << ' ';
+  std::cout << '\n';
 }
-
-void Person::setName( string name )
-{
+void Person::setName( string name ){
 	this->name = name;
 }
-
-void Person::setPref( std::vector<int> pref )
-{
+void Person::setPref( std::vector<int> pref ){
   this->pref = pref;
 }
-
-void Person::addPref( int n )
-{
+void Person::addPref( int n ){
   pref.push_back(n);
 }
+bool Person::compare(int current, int candidate){
+  for ( auto number : pref ){
+    if ( number == current ){
+      return false;
+    } else if ( number == candidate ){
+      return true;
+    }
+  }
+  // std::cout << "You seem to have a number not specified in the prefs!" << '\n';
+  return false;
+}
+int Person::nextId(){
+  int ret = pref.at(at);
+  at = at + 1;
+  return ret;
+}
 
-// class Couple
-// {
-//   public:
-//     Couple();
-//     Couple( Person male, Person female );
-//
-// }
+class Couple
+{
+  public:
+    Couple( Person pfemale );
+    Couple( Person pmale, Person pfemale );
+    void setMale( Person pmale );
+    int getFid() const;
+    void print();
+    Person tryMate( Person pmale );
+
+  private:
+    Person male;
+    Person female;
+};
+
+Couple::Couple(Person pfemale){
+  female = pfemale;
+}
+Couple::Couple(Person pmale, Person pfemale){
+  male = pmale;
+  female = pfemale;
+}
+void Couple::setMale( Person pmale ){
+  male = pmale;
+}
+void Couple::print(){
+  std::cout << male.getName() << " -- " << female.getName()<< '\n';
+}
+Person Couple::tryMate( Person pmale ){
+  if ( male.getId() != 0 ){
+    if ( female.compare( male.getId(), pmale.getId() ) ){
+      Person prev = male;
+      male = pmale;
+      return prev;
+    }
+    else {
+      return pmale;
+    }
+  }
+  Person prev = male;
+  male = pmale;
+  return prev;
+}
+int Couple::getFid() const{
+  return female.getId();
+}
+
+
 
 int main () {
   string line;
@@ -106,8 +157,10 @@ int main () {
   std::vector<string> females;
   std::vector<string> prefM;
   std::vector<string> prefF;
-  std::vector<Person> humans;
-  ifstream myfile ("../data/sm-bbt-in.txt");
+  std::vector<Person> humansF;
+  std::vector<Person> humansM;
+  std::vector<Couple> couples;
+  ifstream myfile ("../data/sm-friends-in.txt");
   if (myfile.is_open())
   {
     while ( getline (myfile,line) )
@@ -134,9 +187,14 @@ int main () {
         if (!odd && at >= n*2+1)
         {
           line.replace(0,2,"");
+          int number;
+          std::vector<int> prefs;
+          std::stringstream iss( line );
+          while ( iss >> number )
+            prefs.push_back( number );
           try {
-            Person p = Person( males.at(index-1), id );
-            humans.push_back( p );
+            Person p = Person( males.at(index-1), prefs, id-1 );
+            humansM.push_back( p );
           } catch (const std::exception& e) {
 
           }
@@ -146,9 +204,14 @@ int main () {
         else if (odd && at >= n*2+1)
         {
           line.replace(0,2,"");
+          int number;
+          std::vector<int> prefs;
+          std::stringstream iss( line );
+          while ( iss >> number )
+            prefs.push_back( number );
           try {
-            Person p = Person( females.at(index), id );
-            humans.push_back(p);
+            Person p = Person( females.at(index), prefs, id-1 );
+            humansF.push_back(p);
           } catch (const std::exception& e) {
 
           }
@@ -164,28 +227,58 @@ int main () {
 
   else cout << "Unable to open file";
 
-  // while (males.size() > 0)
-  // {
+  humansF.erase(humansF.begin());
+
+  // for (std::vector<string>::const_iterator i = males.begin(); i != males.end(); ++i)
+  //   std::cout << *i << endl;
   //
+  // for (std::vector<string>::const_iterator i = females.begin(); i != females.end(); ++i)
+  //   std::cout << *i << endl;
+  //
+  // for (std::vector<string>::const_iterator i = prefM.begin(); i != prefM.end(); ++i)
+  //   std::cout << *i << endl;
+  //
+  // for (std::vector<string>::const_iterator i = prefF.begin(); i != prefF.end(); ++i)
+  //   std::cout << *i << endl;
+  //
+  // for ( auto human : humansM ){
+  //   human.print();
+  // }
+  for ( auto female : humansF ){
+    Couple c = Couple(female);
+    couples.push_back(c);
+  }
+  // for ( auto couple : couples ){
+  //   couple.print();
   // }
 
-  for (std::vector<string>::const_iterator i = males.begin(); i != males.end(); ++i)
-    std::cout << *i << endl;
+  while (humansM.size() > 0){
+    Person focus = humansM.back();
+    humansM.pop_back();
+    int temp = 0;
+    int target = focus.nextId();
+    while (couples.at(temp).getFid() != target){
+      temp = 1 + temp;
+    }
+    Person back = couples.at(temp).tryMate(focus);
+    if (back.getId() != 0){
+      humansM.push_back(back);
+    }
+    // for ( auto couple : couples ){
+    //   couple.print();
+    //   if ( couple.getFid() == target ){
+    //     Person back = couple.tryMate(focus);
+    //     if (back.getId() != 0){
+    //       humansM.push_back(back);
+    //     }
+    //     break;
+    //   }
+    // }
 
-  for (std::vector<string>::const_iterator i = females.begin(); i != females.end(); ++i)
-    std::cout << *i << endl;
-
-  for (std::vector<string>::const_iterator i = prefM.begin(); i != prefM.end(); ++i)
-    std::cout << *i << endl;
-
-  for (std::vector<string>::const_iterator i = prefF.begin(); i != prefF.end(); ++i)
-    std::cout << *i << endl;
-
-  for ( auto human : humans )
-  {
-    human.print();
   }
-
+  for ( auto couple : couples ){
+    couple.print();
+  }
 
   return 0;
 }
