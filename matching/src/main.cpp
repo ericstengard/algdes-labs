@@ -28,7 +28,7 @@ int main () {
     {
       if (line.find("#") == std::string::npos)
       {
-        cout << line << '\n';
+        cout << line << endl;
       }
     }
     myfile.close();
