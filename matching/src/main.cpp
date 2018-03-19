@@ -21,6 +21,7 @@ using namespace std;
 
 int main () {
   string line;
+  
   ifstream myfile ("../data/sm-bbt-in.txt");
   if (myfile.is_open())
   {
