@@ -21,12 +21,20 @@ using namespace std;
 
 int main () {
   string line;
+  interger amount;
   ifstream myfile ("../data/sm-bbt-in.txt");
   if (myfile.is_open())
   {
     while ( getline (myfile,line) )
     {
-      cout << line << '\n';
+      if (line.find("#") != std::string::npos)
+      {
+        std::cout << "test" << '\n';
+      }
+      else
+      {
+        cout << line << '\n';
+      }
     }
     myfile.close();
   }
