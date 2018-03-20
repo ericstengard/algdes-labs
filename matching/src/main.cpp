@@ -4,6 +4,7 @@
 //#include "stdafx.h"
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -18,15 +19,18 @@ void printSolution();
 int n;
 bool first = true;
 std::string line;
-std::vector <vector<int>> malesPref;
-std::vector <vector<int>> femalesPref;
+std::vector < vector<int> > malesPref;
+std::vector < vector<int> > femalesPref;
 std::vector <string> names;
+std::vector <string> namesM;
+std::vector <string> namesF;
+std::vector <int> males;
 std::vector <int> partner;
 
 int main() {
 
 	readFiles();
-	/*
+
 	std::cout << "NAMES IN: " << endl;
 
 	for (auto person : names) {
@@ -35,20 +39,19 @@ int main() {
 
 	std::cout << "PREFS IN: " << endl;
 
-	for (int i = 0; i < malesPref.size(); i++) {
-		for (int j = 0; j < malesPref[i].size(); j++) {
-			std::cout << malesPref[i][j];
+	for ( auto prefs : malesPref ){
+		for ( auto pref : prefs ){
+			std::cout << pref << " ";
 		}
-		std::cout << endl;
+		std::cout << '\n';
+	}
+	for ( auto prefs : femalesPref ){
+		for ( auto pref : prefs ){
+			std::cout << pref << " ";
+		}
+		std::cout << '\n';
 	}
 
-	for (int i = 0; i < femalesPref.size(); i++) {
-		for (int j = 0; j < femalesPref[i].size(); j++) {
-			std::cout << femalesPref[i][j];
-		}
-		std::cout << endl;
-	}
-	*/
 	solve();
 	printSolution();
 
@@ -56,8 +59,9 @@ int main() {
 }
 
 void readFiles() {
+	int at = 0;
 
-	std::ifstream myfile("../data/sm-bbt-in.txt");
+	std::ifstream myfile("../data/sm-random-50-in.txt");
 	//std::ifstream myfile("c:\\Users\\Eric\\Documents\\LTH\\Year2\\algodat\\algdes-labs\\matching\\data\\sm-bbt-in.txt");
 	if (myfile.is_open())
 	{
@@ -73,37 +77,71 @@ void readFiles() {
 					i++;
 					continue;
 				}
-				line.erase(0, 2);
-				for (int i = 0; i < line.length(); i++)
-					if (line[i] == ' ') line.erase(i, 1);
+				// line.erase(0,2);
+				// for (int i = 0; i < line.length(); i++)
+				// 	if (line[i] == ' ') line.erase(i, 1);
 				std::vector<int> prefs;
 				// This is for adding prefs.
 				if(ceil(i/2) <= n)
 					// Adding names
 				{
+					if (at < 9){
+	            line.replace(0,2,"");
+	          } else if (at < 99) {
+	            line.replace(0,3,"");
+	          } else {
+	            line.replace(0,4,"");
+	          }
 					names.push_back(line);
-					partner.push_back(-1);
 				}
 				else if (i % 2 == 0 && round(i / 2) > n) {
-					for (char& i : line) {
-						prefs.push_back(i - '0');
-					}
+					if (at-n < 10){
+	            line.replace(0,2,"");
+	          } else if (at-n < 100) {
+	            line.replace(0,3,"");
+	          } else if (at-n < 1000) {
+	            line.replace(0,4,"");
+	          } else {
+							line.replace(0,5,"");
+						}
+					int number;
+          std::vector<int> prefs;
+          std::stringstream iss( line );
+          while ( iss >> number )
+            prefs.push_back( number );
+					// for (char& i : line) {
+					// 	prefs.push_back(i - '0');
+					// }
 					malesPref.push_back(prefs);
 					prefs.clear();
 				}
 				else if (i % 2 != 0 && round(i / 2) > n) {
-					for (char& i : line) {
-						prefs.push_back(i - '0');
-					}
+					if (at-n < 10){
+	            line.replace(0,2,"");
+	          } else if (at-n < 100) {
+	            line.replace(0,3,"");
+	          } else if (at-n < 1000) {
+	            line.replace(0,4,"");
+	          } else {
+							line.replace(0,5,"");
+						}
+					int number;
+          std::vector<int> prefs;
+          std::stringstream iss( line );
+          while ( iss >> number )
+            prefs.push_back( number );
+					// for (char& i : line) {
+					// 	prefs.push_back(i - '0');
+					// }
 					femalesPref.push_back(prefs);
 					prefs.clear();
 				}
 				i++;
+				at++;
 			}
 
 		}
 		names.pop_back();
-		partner.pop_back();
 		myfile.close();
 	}
 
@@ -112,54 +150,49 @@ void readFiles() {
 }
 
 void solve() {
-
-	int male = 1;
-	while (partner[male] == -1 && malesPref[male].size() > 0) {
-		int woman = malesPref[male].front();
-		woman = woman-1;
-		male = male -1;
-		std::cout << "Woman: " << names[woman] << endl;
-		int first;
-		int second;
-
-		if (partner[woman] == -1) {
-			partner[male] = woman;
-			std::cout << names[male] << " got: " << names[woman] << " as partner" << endl;
-			partner[woman] = male;
-			std::cout << names[woman] << " got: " << names[male] << " as partner" << endl;
+	bool odd = true;
+	for ( auto name : names ){
+		if (odd){
+			namesM.push_back(name);
+		} else {
+			namesF.push_back(name);
 		}
-		else if (1 == 1){
-			auto abc = find(femalesPref[woman].begin(), femalesPref[woman].end(), male);
-			first = distance(femalesPref[woman].begin(), abc);
-			auto abc2 = find(femalesPref[woman].begin(), femalesPref[woman].end(), partner[woman]);
-			second = distance(femalesPref[woman].begin(), abc2);
-		}
-		if (first < second)
-		{
-			int ex = partner[woman];
-			partner[ex] = -1;
-			partner[woman] = male;
-			partner[male] = woman;
-			male = ex;
-		}
+		odd = !odd;
+	}
 
+	for ( int i = 0; i < n; i++){
+		males.push_back(i);
+		partner.push_back(-1);
+	}
 
-		male = (male + 2) % (n * 2);
-		for (int i = 0 ; i < n ; i++){
-			if(partner[male] != -1){
-				male = (male + 2) % (n * 2);
+	while (males.size() > 0){
+		int male = males.front();
+		int target = malesPref.at(male).front()/2 - 1;
+		int prev = -1;
+		malesPref.at(male).erase(malesPref.at(male).begin());
+		males.erase(males.begin());
+		if ( partner.at(target) == -1 ){
+			partner.at(target) = male;
+		} else {
+			for ( auto i : femalesPref.at(target) ){
+				if ( i/2 == male ){
+					prev = partner.at(target);
+					partner.at(target) = male;
+					break;
+				} else if ( i/2 == partner.at(target) ){
+					prev = male;
+					break;
+				}
 			}
 		}
-		std::cout << male << endl;
-
+		if (prev != -1){
+			males.push_back(prev);
+		}
 	}
 }
 
 void printSolution() {
-	for (int i = 0; i < n; i++) {
-		if (partner[i * 2] != -1)
-			std::cout << names[i * 2] << " -- " << names[partner[i * 2]] << endl;
-		else
-			std::cout << names[i * 2] << " -- " << " free" << endl;
+	for (int i = 0; i < n; i++){
+		std::cout << namesM.at(partner.at(i)) << " -- " << namesF.at(i) << '\n';
 	}
 }
