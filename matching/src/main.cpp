@@ -1,7 +1,7 @@
 // AlgoDat_Lab1.cpp : Defines the entry point for the console application.
 //
 
-#include "stdafx.h"
+//#include "stdafx.h"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -15,7 +15,6 @@ using namespace std;
 void readFiles();
 void solve();
 void printSolution();
-
 int n;
 bool first = true;
 std::string line;
@@ -25,11 +24,9 @@ std::vector <string> names;
 std::vector <int> partner;
 
 int main() {
+
 	readFiles();
-	//solve();
-	//printSolution();
-
-
+	/*
 	std::cout << "NAMES IN: " << endl;
 
 	for (auto person : names) {
@@ -51,13 +48,17 @@ int main() {
 		}
 		std::cout << endl;
 	}
+	*/
+	solve();
+	printSolution();
 
 	return 0;
 }
 
 void readFiles() {
 
-	ifstream myfile("c:\\Users\\Eric\\Documents\\LTH\\Year2\\algodat\\algdes-labs\\matching\\data\\sm-bbt-in.txt");
+	std::ifstream myfile("../data/sm-bbt-in.txt");
+	//std::ifstream myfile("c:\\Users\\Eric\\Documents\\LTH\\Year2\\algodat\\algdes-labs\\matching\\data\\sm-bbt-in.txt");
 	if (myfile.is_open())
 	{
 		int i = 0;
@@ -76,25 +77,12 @@ void readFiles() {
 				for (int i = 0; i < line.length(); i++)
 					if (line[i] == ' ') line.erase(i, 1);
 				std::vector<int> prefs;
-
-
-				std::cout << "i: " << i << endl;
-				std::cout << "n: " << n << endl;
-				std::cout << "FML" << endl;
-				std::cout << floor(i/2) << endl;
-			// This is for adding prefs.
+				// This is for adding prefs.
 				if(ceil(i/2) <= n)
 					// Adding names
 				{
-					if (line.length() < 2) {
-						continue;
-					}
-					else {
-						std::cout << "Name to add: " << line << endl;
-						names.push_back(line);
-						partner.push_back(-1);
-					}
-
+					names.push_back(line);
+					partner.push_back(-1);
 				}
 				else if (i % 2 == 0 && round(i / 2) > n) {
 					for (char& i : line) {
@@ -110,11 +98,12 @@ void readFiles() {
 					femalesPref.push_back(prefs);
 					prefs.clear();
 				}
-
 				i++;
 			}
 
 		}
+		names.pop_back();
+		partner.pop_back();
 		myfile.close();
 	}
 
@@ -123,41 +112,54 @@ void readFiles() {
 }
 
 void solve() {
-	
-	int male = 0;
+
+	int male = 1;
 	while (partner[male] == -1 && malesPref[male].size() > 0) {
 		int woman = malesPref[male].front();
+		woman = woman-1;
+		male = male -1;
+		std::cout << "Woman: " << names[woman] << endl;
+		int first;
+		int second;
 
 		if (partner[woman] == -1) {
 			partner[male] = woman;
+			std::cout << names[male] << " got: " << names[woman] << " as partner" << endl;
 			partner[woman] = male;
+			std::cout << names[woman] << " got: " << names[male] << " as partner" << endl;
 		}
-		auto abc = find(femalesPref[woman].begin(), femalesPref[woman].end(), male);
-		int first = distance(femalesPref[woman].begin(), abc);
-		auto abc2 = find(femalesPref[woman].begin(), femalesPref[woman].end(), partner[woman]);
-		int second = distance(femalesPref[woman].begin(), abc2);
+		else if (1 == 1){
+			auto abc = find(femalesPref[woman].begin(), femalesPref[woman].end(), male);
+			first = distance(femalesPref[woman].begin(), abc);
+			auto abc2 = find(femalesPref[woman].begin(), femalesPref[woman].end(), partner[woman]);
+			second = distance(femalesPref[woman].begin(), abc2);
+		}
 		if (first < second)
 		{
 			int ex = partner[woman];
 			partner[ex] = -1;
 			partner[woman] = male;
 			partner[male] = woman;
-
+			male = ex;
 		}
-		
-		// DO SHIT
-	
+
+
+		male = (male + 2) % (n * 2);
+		for (int i = 0 ; i < n ; i++){
+			if(partner[male] != -1){
+				male = (male + 2) % (n * 2);
+			}
+		}
+		std::cout << male << endl;
+
+	}
 }
 
 void printSolution() {
-	
 	for (int i = 0; i < n; i++) {
 		if (partner[i * 2] != -1)
 			std::cout << names[i * 2] << " -- " << names[partner[i * 2]] << endl;
 		else
 			std::cout << names[i * 2] << " -- " << " free" << endl;
 	}
-	
 }
-
-
