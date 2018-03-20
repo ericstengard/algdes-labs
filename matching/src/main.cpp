@@ -145,7 +145,7 @@ int Couple::getFid() const{
 
 
 
-int main () {
+int main (int argc, char* argv[]) {
   string line;
   int n;
   int at = 0;
@@ -160,7 +160,7 @@ int main () {
   std::vector<Person> humansF;
   std::vector<Person> humansM;
   std::vector<Couple> couples;
-  ifstream myfile ("../data/sm-friends-in.txt");
+  ifstream myfile (argv[1]);
   if (myfile.is_open())
   {
     while ( getline (myfile,line) )
@@ -172,21 +172,40 @@ int main () {
           first = !first;
           line.replace(0,2,"");
           n = atoi(line.c_str());
+          // std::cout << n << '\n';
         }
         odd = !odd;
         if (odd && at <= n*2)
         {
-          line.replace(0,2,"");
+          if (at < 10){
+            line.replace(0,2,"");
+          } else if (at < 100) {
+            line.replace(0,3,"");
+          } else {
+            line.replace(0,4,"");
+          }
           males.push_back(line);
         }
         else if (!odd && at <= n*2)
         {
-          line.replace(0,2,"");
+          if (at < 10){
+            line.replace(0,2,"");
+          } else if (at < 100) {
+            line.replace(0,3,"");
+          } else {
+            line.replace(0,4,"");
+          }
           females.push_back(line);
         }
         if (!odd && at >= n*2+1)
         {
-          line.replace(0,2,"");
+          if (at-n < 10){
+            line.replace(0,2,"");
+          } else if (at-n < 100) {
+            line.replace(0,3,"");
+          } else {
+            line.replace(0,4,"");
+          }
           int number;
           std::vector<int> prefs;
           std::stringstream iss( line );
@@ -203,7 +222,13 @@ int main () {
         }
         else if (odd && at >= n*2+1)
         {
-          line.replace(0,2,"");
+          if (at-n < 10){
+            line.replace(0,2,"");
+          } else if (at-n < 100) {
+            line.replace(0,3,"");
+          } else {
+            line.replace(0,4,"");
+          }
           int number;
           std::vector<int> prefs;
           std::stringstream iss( line );
@@ -241,10 +266,11 @@ int main () {
   // for (std::vector<string>::const_iterator i = prefF.begin(); i != prefF.end(); ++i)
   //   std::cout << *i << endl;
   //
-  // for ( auto human : humansM ){
-  //   human.print();
+  // for ( auto male : humansM ){
+  //   male.print();
   // }
   for ( auto female : humansF ){
+    // female.print();
     Couple c = Couple(female);
     couples.push_back(c);
   }
@@ -253,27 +279,32 @@ int main () {
   // }
 
   while (humansM.size() > 0){
-    Person focus = humansM.back();
-    humansM.pop_back();
-    int temp = 0;
-    int target = focus.nextId();
-    while (couples.at(temp).getFid() != target){
-      temp = 1 + temp;
+    try {
+
+      Person focus = humansM.back();
+      humansM.pop_back();
+      int temp = 0;
+      int target = focus.nextId();
+      while (couples.at(temp).getFid() != target){
+        temp = 1 + temp;
+      }
+      Person back = couples.at(temp).tryMate(focus);
+      if (back.getId() != 0){
+        humansM.push_back(back);
+      }
+      // for ( auto couple : couples ){
+      //   couple.print();
+      //   if ( couple.getFid() == target ){
+      //     Person back = couple.tryMate(focus);
+      //     if (back.getId() != 0){
+      //       humansM.push_back(back);
+      //     }
+      //     break;
+      //   }
+      // }
+    } catch (const std::exception& e) {
+
     }
-    Person back = couples.at(temp).tryMate(focus);
-    if (back.getId() != 0){
-      humansM.push_back(back);
-    }
-    // for ( auto couple : couples ){
-    //   couple.print();
-    //   if ( couple.getFid() == target ){
-    //     Person back = couple.tryMate(focus);
-    //     if (back.getId() != 0){
-    //       humansM.push_back(back);
-    //     }
-    //     break;
-    //   }
-    // }
 
   }
   for ( auto couple : couples ){
