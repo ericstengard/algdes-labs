@@ -181,9 +181,11 @@ int main (int argc, char* argv[]) {
             line.replace(0,2,"");
           } else if (at < 100) {
             line.replace(0,3,"");
-          } else {
+          } else if (at < 1000){
             line.replace(0,4,"");
-          }
+          } else {
+						line.replace(0,5,"");
+					}
           males.push_back(line);
         }
         else if (!odd && at <= n*2)
@@ -192,9 +194,11 @@ int main (int argc, char* argv[]) {
             line.replace(0,2,"");
           } else if (at < 100) {
             line.replace(0,3,"");
-          } else {
+          } else if (at < 1000){
             line.replace(0,4,"");
-          }
+          } else {
+						line.replace(0,5,"");
+					}
           females.push_back(line);
         }
         if (!odd && at >= n*2+1)
@@ -203,9 +207,11 @@ int main (int argc, char* argv[]) {
             line.replace(0,2,"");
           } else if (at-n < 100) {
             line.replace(0,3,"");
-          } else {
-            line.replace(0,4,"");
-          }
+          } else if (at-n < 1000) {
+						line.replace(0,4,"");
+					} else {
+						line.replace(0,5,"");
+					}
           int number;
           std::vector<int> prefs;
           std::stringstream iss( line );
@@ -226,9 +232,11 @@ int main (int argc, char* argv[]) {
             line.replace(0,2,"");
           } else if (at-n < 100) {
             line.replace(0,3,"");
-          } else {
-            line.replace(0,4,"");
-          }
+          } else if (at-n < 1000) {
+						line.replace(0,4,"");
+					} else {
+						line.replace(0,5,"");
+					}
           int number;
           std::vector<int> prefs;
           std::stringstream iss( line );
