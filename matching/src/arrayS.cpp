@@ -19,6 +19,7 @@ std::vector<std::vector<int> > prefM;
 std::vector<std::vector<int> > prefF;
 std::vector<int> couples;
 std::vector<int> queue;
+std::vector<int> trial;
 
 void readFile();
 void printData();
@@ -41,7 +42,7 @@ int main (int argc, char* argv[]) {
 }
 
 void readFile() {
-  ifstream myfile ("../data/sm-worst-500-in.txt");
+  ifstream myfile ("../data/sm-random-500-in.txt");
   if (myfile.is_open()){
     while ( getline (myfile, line) ){
       if ( line.find("#") == std::string::npos ){
@@ -130,6 +131,7 @@ void solve() {
   for (int i = 0 ; i < n; i++){
     couples.push_back(-1);
     queue.push_back(i);
+    trial.push_back(0);
   }
   while (queue.size() > 0){
     int male = queue.at(0);
@@ -151,9 +153,15 @@ void solve() {
 			queue.push_back(prev);
 		}
   }
+
+  // sort after males instead of females...
+  for ( int i = 0; i < couples.size(); i++ ){
+    trial.at(couples.at(i)) = i;
+  }
+
 }
 void print() {
   for (int i = 0; i < n; i++){
-		std::cout << namesM.at(couples.at(i)) << " -- " << namesF.at(i) << '\n';
+		std::cout << namesM.at(i) << " -- " << namesF.at(trial.at(i)) << '\n';
 	}
 }
