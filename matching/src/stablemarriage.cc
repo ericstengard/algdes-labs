@@ -22,6 +22,8 @@ void printData();
 void solve();
 void print();
 int main (int argc, char* argv[]) {
+  ios::sync_with_stdio(0);
+  cin.tie(0);
   readFile();
   solve();
   print();
@@ -112,13 +114,9 @@ void solve() {
 			queue.push_back(prev);
 		}
   }
-  // sort after males instead of females...
-  for ( int i = 0; i < couples.size(); i++ ){
-    trial.at(couples.at(i)) = i;
-  }
 }
 void print() {
   for (int i = 0; i < n; i++){
-		std::cout << namesM.at(i) << " -- " << namesF.at(trial.at(i)) << '\n';
+		std::cout << namesM.at(couples.at(i)) << " -- " << namesF.at(i) << '\n';
 	}
 }
