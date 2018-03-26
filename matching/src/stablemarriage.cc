@@ -1,143 +1,108 @@
 #include <iostream>
-#include <fstream>
 #include <sstream>
 #include <string>
 #include <vector>
-#include <algorithm>
+#include <list>
 using namespace std;
-string line;
-bool first = true;
-bool odd = true;
-
-std::vector<string> namesM;
-std::vector<string> namesF;
-std::vector<std::vector<int> > prefM;
-std::vector<std::vector<int> > prefF;
-std::vector<int> couples;
-std::vector<int> queue;
-std::vector<int> trial;
-std::vector<string> test;
 int n;
-void readFile();
-void printData();
-void solve();
-void print();
-int main (int argc, char* argv[]) {
+int main (int argc, char* argv[]){
   ios::sync_with_stdio(0);
-  //cin.tie(0);
-  readFile();
-  solve();
-  print();
-}
-void readFile() {
+  cin.tie(0);
+  //take out N
   std::string line;
-  //std::vector<std::string> test;
-  // getline(cin, line);
-  // std::stringstream iss(line);
-  // string b;
-  // iss >> b;
-  // while (b.at(0) == '#'){
-  //   getline(cin, line);
-  //   std::stringstream iss(line);
-  //   iss >> b;
-  // }
-  // n = atoi(b.erase(0, 2).c_str());
-  int count = 0;
-  while (getline(std::cin, line)) {
-      // try{
-    if(line.size() > 0 && line.at(0) != '#'){
-      // std::stringstream iss(line);
-      // string a;
-      // iss >> a;
-      // if(a.at(0) != '#'){
-      test.push_back(line);
-      // }
-    }
-  // } catch (int e) {
-    // cout << "LOL";
-  // }
-    count++;
+  getline(std::cin, line);
+  while (line.at(0) == '#'){
+    getline(std::cin, line);
   }
-  n = atoi(test.at(0).erase(0, 2).c_str());
-  test.erase(test.begin());
+  n = atoi(line.erase(0, 2).c_str());
+  //read all lines and store them
   int at = 0;
-  bool G = false;
-  for (string lin : test){
-    G = !G;
-    if (at < n*2){
-      int number;
-      string name;
-      std::stringstream iss( lin );
-      if ( iss >> number ){
-        if (iss >> name){
-          if (number % 2 != 0){
-            namesM.push_back(name);
-          } else {
-            namesF.push_back(name);
-          }
-        }
-      }
-    }
-    if (n*2 <= at && at < n*4) {
-      int number;
-      std::vector<int> prefs (n, -1);
-      std::stringstream iss( lin );
-      string hane;
-      iss >> hane;
-      int i = 1;
-      while ( iss >> number ){
-        if ( G ){
-          prefs.at( i - 1 ) = number / 2 - 1;
+  string namesM[n];
+  string namesF[n];
+  std::vector<int> prefsM[n];
+  std::vector<int> prefsF[n];
+  int nb = 0;
+  while (getline(std::cin, line)){
+    if(line.size() > 0 && line.at(0) != '#'){
+      if (at < n*2){
+        int number;
+        string name;
+        std::stringstream iss( line );
+        iss >> number;
+        iss >> name;
+        if (number%2 == 1){
+          namesM[nb] = name;
         } else {
-          prefs.at( number/2 ) = i;
+          namesF[nb] = name;
+          nb++;
         }
-        i++;
-      }
-      if ( G ){
-        prefM.push_back(prefs);
       } else {
-        prefF.push_back(prefs);
+        int number;
+        string name;
+        std::vector<int> prefs(n, 0);
+        std::stringstream iss( line );
+        iss >> name;
+        int num = std::stoi(name, nullptr, 0);
+        bool M;
+        if (num%2 == 1){
+          M = true;
+        } else {
+          M = false;
+        }
+        nb = 0;
+        while (iss >> number){
+          if ( M ){
+            prefs.at( nb ) = number / 2 - 1;
+          } else {
+            prefs.at( number/2 ) = nb;
+          }
+          nb++;
+        }
+        if (M){
+          prefsM[num/2] = prefs;
+        } else {
+          prefsF[num/2-1] = prefs;
+        }
       }
+      at++;
     }
-    at++;
   }
-}
-void solve() {
-  for (int i = 0 ; i < n; i++){
-    couples.push_back(-1);
-    queue.push_back(i);
-    // trial.push_back(0);
+  //algo for perfect match
+  std::list<int> queue;
+  int couples[n];
+  int maletaken[n];
+  int trial[n];
+  for (int i = 0; i < n; i++){
+    queue.push_front(i);
+    couples[i] = -1;
+    maletaken[i] = 0;
   }
   while (queue.size() > 0){
-    int male = queue.at(0);
-    int target = prefM.at(male).at(0);
+    int male = queue.front();
+    queue.pop_front();
+    int target = prefsM[male].at(maletaken[male]);
+    maletaken[male]++;
     int prev = -1;
-    prefM.at(male).erase(prefM.at(male).begin());
-		queue.erase(queue.begin());
-    if ( couples.at(target) == -1 ){
-			couples.at(target) = male;
+    if ( couples[target] == -1 ){
+			couples[target] = male;
 		} else {
-      if ( prefF.at(target).at(male) < prefF.at(target).at(couples.at(target)) ){
-        prev = couples.at(target);
-        couples.at(target) = male;
+      if ( prefsF[target].at(male) < prefsF[target].at(couples[target]) ){
+        prev = couples[target];
+        couples[target] = male;
       } else {
         prev = male;
       }
     }
     if (prev != -1){
-			queue.push_back(prev);
+			queue.push_front(prev);
 		}
   }
-  // // sort after males instead of females...
-  // for ( unsigned int i = 0; i < couples.size(); i++ ){
-  //   trial.at(couples.at(i)) = i;
-  // }
-}
-void print() {
-  // for (int i = 0; i < n; i++){
-	// 	std::cout << namesM.at(i) << " -- " << namesF.at(trial.at(i)) << '\n';
-	// }
+  //sort them aaccording to males
+  for ( unsigned int i = 0; i < n; i++ ){
+    trial[couples[i]] = i;
+  }
+  //print to console
   for (int i = 0; i < n; i++){
-		std::cout << namesM.at(couples.at(i)) << " -- " << namesF.at(i) << '\n';
+		std::cout << namesM[i] << " -- " << namesF[trial[i]] << '\n';
 	}
 }
