@@ -32,35 +32,38 @@ int main (int argc, char* argv[]) {
 void readFile() {
   std::string line;
   //std::vector<std::string> test;
-  getline(cin, line);
-  std::stringstream iss(line);
-  string b;
-  iss >> b;
-  while (b.at(0) == '#'){
-    getline(cin, line);
-    std::stringstream iss(line);
-    iss >> b;
-  }
-  n = atoi(b.erase(0, 2).c_str());
+  // getline(cin, line);
+  // std::stringstream iss(line);
+  // string b;
+  // iss >> b;
+  // while (b.at(0) == '#'){
+  //   getline(cin, line);
+  //   std::stringstream iss(line);
+  //   iss >> b;
+  // }
+  // n = atoi(b.erase(0, 2).c_str());
   int count = 0;
-  while (getline(std::cin, line) && count < n * 4) {
-      try{
-    std::stringstream iss(line);
-    string a;
-    iss >> a;
-    if(a.at(0) != '#' && !(a.size() > 0)){
-      test.push_back(a);
+  while (getline(std::cin, line)) {
+      // try{
+    if(line.size() > 0 && line.at(0) != '#'){
+      // std::stringstream iss(line);
+      // string a;
+      // iss >> a;
+      // if(a.at(0) != '#'){
+      test.push_back(line);
+      // }
     }
-  } catch (int e) {
-    cout << "LOL";
-  }
+  // } catch (int e) {
+    // cout << "LOL";
+  // }
     count++;
   }
-  //n = atoi(test.at(0).erase(0, 2).c_str());
+  n = atoi(test.at(0).erase(0, 2).c_str());
   test.erase(test.begin());
   int at = 0;
   bool G = false;
   for (string lin : test){
+    G = !G;
     if (at < n*2){
       int number;
       string name;
@@ -75,26 +78,20 @@ void readFile() {
         }
       }
     }
-    if (n*2 < at && at < n*4) {
+    if (n*2 <= at && at < n*4) {
       int number;
       std::vector<int> prefs (n, -1);
       std::stringstream iss( lin );
       string hane;
       iss >> hane;
-      bool F = true;
       int i = 1;
       while ( iss >> number ){
-        if ( F ){
-          F = !F;
-          G = !G;
+        if ( G ){
+          prefs.at( i - 1 ) = number / 2 - 1;
         } else {
-          if ( G ){
-            prefs.at( i - 1 ) = number / 2 - 1;
-          } else {
-            prefs.at( number/2 ) = i;
-          }
-          i++;
+          prefs.at( number/2 ) = i;
         }
+        i++;
       }
       if ( G ){
         prefM.push_back(prefs);
@@ -109,7 +106,7 @@ void solve() {
   for (int i = 0 ; i < n; i++){
     couples.push_back(-1);
     queue.push_back(i);
-    trial.push_back(0);
+    // trial.push_back(0);
   }
   while (queue.size() > 0){
     int male = queue.at(0);
@@ -131,13 +128,16 @@ void solve() {
 			queue.push_back(prev);
 		}
   }
-  // sort after males instead of females...
-  for ( unsigned int i = 0; i < couples.size(); i++ ){
-    trial.at(couples.at(i)) = i;
-  }
+  // // sort after males instead of females...
+  // for ( unsigned int i = 0; i < couples.size(); i++ ){
+  //   trial.at(couples.at(i)) = i;
+  // }
 }
 void print() {
+  // for (int i = 0; i < n; i++){
+	// 	std::cout << namesM.at(i) << " -- " << namesF.at(trial.at(i)) << '\n';
+	// }
   for (int i = 0; i < n; i++){
-		std::cout << namesM.at(i) << " -- " << namesF.at(trial.at(i)) << '\n';
+		std::cout << namesM.at(couples.at(i)) << " -- " << namesF.at(i) << '\n';
 	}
 }
