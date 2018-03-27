@@ -1,11 +1,24 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <vector>
 #include <list>
+#include <vector>
 using namespace std;
+std::vector<string> namesM;
+std::vector<string> namesF;
+std::vector<std::vector<int> > prefsM;
+std::vector<std::vector<int> > prefsF;
+std::vector<int> couples;
+std::vector<int> maletaken;
+std::vector<int> trial;
+std::list<int> queue;
+int nb = 0;
+int mc = 0;
+int fc = 0;
 int n;
-int main (int argc, char* argv[]){
+int at = 0;
+int main (){
+  // int n;
   ios::sync_with_stdio(0);
   cin.tie(0);
   //take out N
@@ -14,14 +27,20 @@ int main (int argc, char* argv[]){
   while (line.at(0) == '#'){
     getline(std::cin, line);
   }
-  n = atoi(line.erase(0, 2).c_str());
+  n = std::atoi(line.erase(0, 2).c_str());
   //read all lines and store them
-  int at = 0;
-  string namesM[n];
-  string namesF[n];
-  std::vector<int> prefsM[n];
-  std::vector<int> prefsF[n];
-  int nb = 0;
+  // int at = 0;
+  // std::vector<string> namesM(n,"");
+  // std::vector<string> namesF(n,"");
+  // std::vector<std::vector<int> > prefsM(n, std::vector<int>(n, 0));
+  // std::vector<std::vector<int> > prefsF(n, std::vector<int>(n, 0));
+  // std::vector<string> namesM;
+  // std::vector<string> namesF;
+  // std::vector<std::vector<int> > prefsM;
+  // std::vector<std::vector<int> > prefsF;
+  // int nb = 0;
+  // int mc = 0;
+  // int fc = 0;
   while (getline(std::cin, line)){
     if(line.size() > 0 && line.at(0) != '#'){
       if (at < n*2){
@@ -31,15 +50,21 @@ int main (int argc, char* argv[]){
         iss >> number;
         iss >> name;
         if (number%2 == 1){
-          namesM[nb] = name;
+          // namesM.at(nb) = name;
+          namesM.push_back(name);
         } else {
-          namesF[nb] = name;
+          // namesF.at(nb) = name;
+          namesF.push_back(name);
           nb++;
         }
       } else {
         int number;
         string name;
-        std::vector<int> prefs(n, 0);
+        // std::vector<int> prefs(n, 0);
+        std::vector<int> prefs;
+        for ( int j = 0; j < n; j++){
+          prefs.push_back(0);
+        }
         std::stringstream iss( line );
         iss >> name;
         int num = std::stoi(name, nullptr, 0);
@@ -58,37 +83,46 @@ int main (int argc, char* argv[]){
           }
           nb++;
         }
-        if (M){
-          prefsM[num/2] = prefs;
+        if (M) {
+          // prefsM.at(mc) = prefs;
+          prefsM.push_back(prefs);
+          mc++;
         } else {
-          prefsF[num/2-1] = prefs;
+          // prefsF.at(fc) = prefs;
+          prefsF.push_back(prefs);
+          fc++;
         }
       }
       at++;
     }
   }
   //algo for perfect match
-  std::list<int> queue;
-  int couples[n];
-  int maletaken[n];
-  int trial[n];
+  // std::list<int> queue;
+  // std::vector<int> couples(n, 0);
+  // std::vector<int> maletaken(n, 0);
+  // std::vector<int> trial(n, 0);
+  // std::vector<int> couples;
+  // std::vector<int> maletaken;
+  // std::vector<int> trial;
   for (int i = 0; i < n; i++){
     queue.push_front(i);
-    couples[i] = -1;
-    maletaken[i] = 0;
+    // couples.at(i) = -1;
+    couples.push_back(-1);
+    maletaken.push_back(0);
+    trial.push_back(0);
   }
   while (queue.size() > 0){
     int male = queue.front();
     queue.pop_front();
-    int target = prefsM[male].at(maletaken[male]);
-    maletaken[male]++;
+    int target = prefsM.at(male).at(maletaken.at(male));
+    maletaken.at(male)++;
     int prev = -1;
-    if ( couples[target] == -1 ){
-			couples[target] = male;
+    if ( couples.at(target) == -1 ){
+			couples.at(target) = male;
 		} else {
-      if ( prefsF[target].at(male) < prefsF[target].at(couples[target]) ){
-        prev = couples[target];
-        couples[target] = male;
+      if ( prefsF.at(target).at(male) < prefsF.at(target).at(couples.at(target)) ){
+        prev = couples.at(target);
+        couples.at(target) = male;
       } else {
         prev = male;
       }
@@ -98,11 +132,22 @@ int main (int argc, char* argv[]){
 		}
   }
   //sort them aaccording to males
-  for ( unsigned int i = 0; i < n; i++ ){
-    trial[couples[i]] = i;
+  for ( int i = 0; i < n; i++ ){
+    trial.at(couples.at(i)) = i;
   }
   //print to console
   for (int i = 0; i < n; i++){
-		std::cout << namesM[i] << " -- " << namesF[trial[i]] << '\n';
+		std::cout << namesM.at(i) << " -- " << namesF.at(trial.at(i)) << '\n';
 	}
+  // for (int i = 0; i < n; i++){
+	// 	std::cout << namesM[couples[i]] << " -- " << namesF[i] << '\n';
+	// }
+  namesM.clear();
+  namesF.clear();
+  prefsM.clear();
+  prefsF.clear();
+  couples.clear();
+  maletaken.clear();
+  trial.clear();
+  queue.clear();
 }
