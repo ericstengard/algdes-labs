@@ -8,7 +8,9 @@
 #include <stdio.h>
 #include <set>
 #include <cstddef>
+#include <map>
 using namespace std;
+std::map<string,set<string> > allKnowJumps;
 class Node{
   public:
     string word;
@@ -21,6 +23,8 @@ class Node{
 int findPath(set<string> words, string from, string to){
   list<Node> queue;
   list<string> wordsToErase;
+  std::map<string,set<string> >::iterator it;
+  std::set<string>::iterator it2;
   queue.push_front(Node(from, 0));
   while (!queue.empty()){
     Node top = queue.front();
@@ -30,6 +34,21 @@ int findPath(set<string> words, string from, string to){
     if (topword.compare(to) == 0){
       return top.numSteps;
     }
+    it = allKnowJumps.find(topword);
+    if (it != allKnowJumps.end()){
+      for (auto testWord : allKnowJumps[topword]){
+        if (testWord.compare(to) == 0) {
+          return top.numSteps;
+        }
+        std::cout << "We know jump from: " << topword << " to " << testWord << "is possible" << '\n';
+        it2 = words.find(testWord);
+        if (it2 != words.end()){
+          queue.push_back(Node(testWord, top.numSteps+1));
+        }
+        words.erase(testWord);
+      }
+    }
+    string topwordUntouched = topword;
     topword.erase(0,1);
     for (auto newWord : words){
       string temp = newWord;
@@ -45,6 +64,13 @@ int findPath(set<string> words, string from, string to){
       if (check){
         if (newWord.compare(to) == 0){
           return top.numSteps+1;
+        }
+        if (it != allKnowJumps.end()){
+          allKnowJumps[topwordUntouched].insert(newWord);
+        } else {
+          set<string> hane;
+          hane.insert(newWord);
+          allKnowJumps.insert(std::pair<string,set<string> >(topwordUntouched, hane));
         }
         queue.push_back(Node(newWord, top.numSteps+1));
         wordsToErase.push_front(newWord);

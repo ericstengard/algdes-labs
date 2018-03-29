@@ -7,7 +7,7 @@
 #include <stdio.h>
 using namespace std;
 int main (int argc, char const *argv[]){
-  // const clock_t begin1 = clock();
+  const clock_t begin1 = clock();
   int n;
   ios::sync_with_stdio(0);
   cin.tie(0);
@@ -116,8 +116,8 @@ int main (int argc, char const *argv[]){
   for (int i = 0; i < n; i++){
 		std::cout << namesM.at(couples.at(i)) << " -- " << namesF.at(i) << '\n';
 	}
-  // const clock_t end1 = clock();
-  // std::cout << "WHOLE: " << (end1-begin1)/double(CLOCKS_PER_SEC) << '\n';
+  const clock_t end1 = clock();
+  std::cout << "WHOLE: " << (end1-begin1)/double(CLOCKS_PER_SEC) << '\n';
   // std::cout << "READ: " << (end2-begin2)/double(CLOCKS_PER_SEC) << '\n';
   // std::cout << "ALGO: " << (end3-begin3)/double(CLOCKS_PER_SEC) << '\n';
   // std::cout << "WRITEDATAS: " << (end4-begin4)/double(CLOCKS_PER_SEC) << '\n';
