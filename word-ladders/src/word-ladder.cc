@@ -34,13 +34,17 @@ int findPath(set<string> words, string from, string to){
     if (topword.compare(to) == 0){
       return top.numSteps;
     }
+    const clock_t begin2 = clock();
+    std::cout << words.size() << '\n';
     it = allKnowJumps.find(topword);
     if (it != allKnowJumps.end()){
+      std::cout << "topword found" << '\n';
+      it2 = allKnowJumps[topword].find(to);
+      if (it2 != allKnowJumps[topword].end()){
+        return top.numSteps;
+      }
       for (auto testWord : allKnowJumps[topword]){
-        if (testWord.compare(to) == 0) {
-          return top.numSteps;
-        }
-        std::cout << "We know jump from: " << topword << " to " << testWord << "is possible" << '\n';
+        std::cout << "found jump" << '\n';
         it2 = words.find(testWord);
         if (it2 != words.end()){
           queue.push_back(Node(testWord, top.numSteps+1));
@@ -48,6 +52,10 @@ int findPath(set<string> words, string from, string to){
         words.erase(testWord);
       }
     }
+    std::cout << words.size() << '\n';
+    const clock_t end2 = clock();
+    // std::cout << "learnt: " << (end2-begin2)/double(CLOCKS_PER_SEC) << '\n';
+    const clock_t begin3 = clock();
     string topwordUntouched = topword;
     topword.erase(0,1);
     for (auto newWord : words){
@@ -79,6 +87,8 @@ int findPath(set<string> words, string from, string to){
     for (auto w : wordsToErase){
       words.erase(w);
     }
+    const clock_t end3 = clock();
+    // std::cout << "brute: " << (end2-begin2)/double(CLOCKS_PER_SEC) << '\n';
   }
   return -1;
 }

@@ -6,10 +6,22 @@
 #include <stdlib.h>
 #include <stdio.h>
 using namespace std;
+std::vector<std::string> namesM;
+std::vector<std::string> namesF;
+std::vector<std::vector<int> > prefsM;
+std::vector<std::vector<int> > prefsF;
+std::vector<int> couples;
+std::vector<int> maletaken;
+std::vector<int> prefs;
+int num;
+int atM = 0;
+int atF = 0;
+char str[50];
+int gender;
+int n;
 int main (int argc, char const *argv[]){
-  int n;
-  ios::sync_with_stdio(0);
-  cin.tie(0);
+  // ios::sync_with_stdio(0);
+  // cin.tie(0);
   //take out N
   std::string line;
   getline(std::cin, line);
@@ -19,49 +31,35 @@ int main (int argc, char const *argv[]){
   line.erase(0, 2);
   std::stringstream iss( line );
   iss >> n;
-  // std::vector<string> namesM(n,"");
-  // std::vector<string> namesF(n,"");
-  std::vector<string> namesM;
-  std::vector<string> namesF;
-  // std::vector<std::vector<int> > prefsM(n, std::vector<int>(n, 0));
-  // std::vector<std::vector<int> > prefsF(n, std::vector<int>(n, 0));
-  std::vector<std::vector<int> > prefsM;
-  std::vector<std::vector<int> > prefsF;
+  namesM.resize(n);
+  namesF.resize(n);
+  prefsM.resize(n);
+  prefsF.resize(n);
   //reading in names!
-  char str[50];
-  int num;
-  int atM = 0;
-  int atF = 0;
   for (int i = 0; i < n*2; i++){
     scanf("%d", &num);
     scanf("%s", str);
     if (num%2 == 1){
-      // namesM.at(atM) = str;
-      namesM.push_back(str);
+      namesM.at(atM) = str;
       atM++;
     } else {
-      // namesF.at(atF) = str;
-      namesF.push_back(str);
+      namesF.at(atF) = str;
       atF++;
     }
   }
   getline(std::cin, line);
   atM = 0;
   atF = 0;
-  int gender;
   for (int i = 0; i < n*2; i++){
     scanf("%s", str);
-    string number;
+    std::string number;
     std::stringstream iss( str );
     iss >> number;
     number.erase(number.size()-1, number.size());
     std::stringstream dss( number );
     dss >> gender;
     // std::vector<int> prefs(n,0);
-    std::vector<int> prefs;
-    for (int i = 0; i < n; i++){
-      prefs.push_back(0);
-    }
+    prefs.resize(n);
     for (int i = 0; i < n; i++) {
       scanf("%d", &num);
       if (gender%2 == 1){
@@ -71,24 +69,20 @@ int main (int argc, char const *argv[]){
       }
     }
     if (gender%2 == 1){
-      // prefsM.at(atM) = prefs;
-      prefsM.push_back(prefs);
+      prefsM.at(atM) = prefs;
       atM++;
     } else {
-      // prefsF.at(atF) = prefs;
-      prefsF.push_back(prefs);
+      prefsF.at(atF) = prefs;
       atF++;
     }
   }
   std::list<int> queue;
-  // std::vector<int> couples(n, -1);
-  std::vector<int> couples;
-  // std::vector<int> maletaken(n, 0);
-  std::vector<int> maletaken;
+  couples.resize(n);
+  maletaken.resize(n);
   for (int i = 0; i < n; i++){
     queue.push_front(i);
-    couples.push_back(-1);
-    maletaken.push_back(0);
+    couples.at(i) = -1;
+    maletaken.at(i) = 0;
   }
   while (queue.size() > 0){
     int male = queue.front();
