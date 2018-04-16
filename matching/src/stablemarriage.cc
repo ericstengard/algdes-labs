@@ -20,8 +20,9 @@ char str[50];
 int gender;
 int n;
 int main (int argc, char const *argv[]){
-  // ios::sync_with_stdio(0);
-  // cin.tie(0);
+  // const clock_t begin1 = clock();
+  ios::sync_with_stdio(0);
+  cin.tie(0);
   //take out N
   std::string line;
   getline(std::cin, line);
@@ -50,16 +51,13 @@ int main (int argc, char const *argv[]){
   getline(std::cin, line);
   atM = 0;
   atF = 0;
+  prefs.resize(n);
   for (int i = 0; i < n*2; i++){
     scanf("%s", str);
-    std::string number;
-    std::stringstream iss( str );
-    iss >> number;
+    std::string number = str;
     number.erase(number.size()-1, number.size());
     std::stringstream dss( number );
     dss >> gender;
-    // std::vector<int> prefs(n,0);
-    prefs.resize(n);
     for (int i = 0; i < n; i++) {
       scanf("%d", &num);
       if (gender%2 == 1){
@@ -107,5 +105,7 @@ int main (int argc, char const *argv[]){
   for (int i = 0; i < n; i++){
 		std::cout << namesM.at(couples.at(i)) << " -- " << namesF.at(i) << '\n';
 	}
+  // const clock_t end1 = clock();
+  // std::cout << "WHOLE: " << (end1-begin1)/double(CLOCKS_PER_SEC) << '\n';
   return 0;
 }
