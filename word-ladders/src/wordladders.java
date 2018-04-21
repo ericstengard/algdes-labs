@@ -33,10 +33,11 @@ public class wordladders {
 		graph.calcForInput(wantedPaths);											//FASTER: Just connect for wanted words.
         long algoB = System.nanoTime();
 
-		System.out.println("Algo: " + (algoB - algoA)/1000000 + "ms");
 
 
 		System.out.print(graph.toString());
+		System.out.println("Graph: " + (graphB - graphA)/1000000 + "ms");
+		System.out.println("Algo: " + (algoB - algoA)/1000000 + "ms");
 	}
 
 	String output = "If this is shown then no input was specified";
