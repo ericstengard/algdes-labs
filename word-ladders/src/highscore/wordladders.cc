@@ -11,37 +11,22 @@
 #include <cstddef>
 #include <map>
 #include <unordered_map>
-
-class Node{
-  public:
-    std::string word;
-    // std::list<std::string> prevs;
-    int numJ;
-    // bool visited;
-    std::vector<int> neighbours;
-    std::list<int> neighbourss;
-    Node(std::string w, std::vector<int> n);
-};
-Node::Node(std::string w, std::vector<int> n){
-  word = w;
-  // visited = v;
-  neighbours = n;
-  numJ = 0;
-}
+#include <queue>
 
 int n;
-std::list<std::pair<std::string,std::string> > wordpairs;
+std::vector<std::pair<std::string,std::string> > wordpairs;
 std::unordered_map<std::string,int> nameToIndex;
-std::vector<Node *> nodes;
+std::vector<std::string> words;
+std::unordered_map<std::string,std::vector<int> > calcW;
+std::vector<std::vector<int> > wordNeighbours;
+std::vector<int> wordJ;
 
 void addPossibleArc(int i, int j) {
-  std::string &a = (*nodes[i]).word;
-  std::string &b = (*nodes[j]).word;
-  if(a.compare(b) == 0){
-    return;
-  }
-  std::string from = a;
-  std::string to = b;
+  // if(i == j){
+  //   return;
+  // }
+  std::string from = words[i];
+  std::string to = words[j];
   from.erase(0,1);
   for(int i = 0; i < 4; i++){
     std::size_t found = to.find_first_of(from.at(i));
@@ -50,17 +35,24 @@ void addPossibleArc(int i, int j) {
     }
     to[found] = '\0';
   }
-  (*nodes[i]).neighbours[j] = 1;
-  (*nodes[i]).neighbourss.push_back(j);
+  wordNeighbours[i].push_back(j);
 }
 
 void calcConnections(int size) {
   for(int i = 0; i < size; i++) {
-    for(int j = i+1; j < size; j++) {
-      if(i != j) {
-        addPossibleArc(i,j);
-        addPossibleArc(j,i);
+    std::string sorted = words[i];
+    sorted.erase(0,1);
+    std::sort(sorted.begin(), sorted.end());
+    std::unordered_map<std::string,std::vector<int> >::const_iterator got = calcW.find(sorted);
+    if ( got == calcW.end() ){
+      for(int j = 0; j < size; j++) {
+        // if(i != j) {
+          addPossibleArc(i,j);
+        // }
       }
+      calcW.insert(std::make_pair<std::string,std::vector<int> >(sorted, wordNeighbours[i]));
+    } else {
+      wordNeighbours[i] = calcW[sorted];
     }
   }
 }
@@ -74,64 +66,45 @@ std::string first_numberstring(std::string const & str) {
   return std::string();
 }
 
-// std::list<std::string> bfsALGO(Node & from, Node & to){
-int bfsALGO(Node & from, Node & to){
-  std::vector<bool> visited(n);
-  std::list<Node *> queue;
-  queue.push_front(&from);
-  from.numJ = 0;
-  if ( from.word.compare(to.word) == 0 ){
-    // from.prevs.push_back(to.word);
-    // return from.prevs;
+int bfsALGO(int from, int to, bool vis[]){
+  if ( from == to ){
     return 0;
   }
-  visited[nameToIndex[from.word]] = true;
-  if (from.neighbours[nameToIndex[to.word]] == 1){
-    // v.prevs.push_back(v.word);
-    // v.prevs.push_back(to.word);
-    from.numJ ++;
-    // return v.prevs;
-    return from.numJ;
+  for (int i = 0; i < n; i++) {
+    vis[i] = false;
   }
+  std::queue<int> queue;
+  queue.push(from);
+  wordJ[from] = 0;
+  vis[from] = true;
   while ( !queue.empty() ){
-    Node &v = (*queue.front());
-    queue.pop_front();
-    for (int neighbour : v.neighbourss) {
-      if ( !visited[neighbour] ){
-        // if ((*nodes[neighbour]).word.compare(to.word) == 0){
-        //   v.prevs.push_back(v.word);
-        //   v.prevs.push_back(to.word);
-        //   return v.prevs;
-        // }
-        visited[neighbour] = true;
-        // (*nodes[neighbour]).prevs = v.prevs;
-        // (*nodes[neighbour]).prevs.push_back(v.word);
-        (*nodes[neighbour]).numJ = v.numJ;
-        (*nodes[neighbour]).numJ ++;
-        if ((*nodes[neighbour]).neighbours[nameToIndex[to.word]] == 1){
-          (*nodes[neighbour]).numJ ++;
-          return (*nodes[neighbour]).numJ;
+    int v = queue.front();
+    queue.pop();
+    for (int neighbour : wordNeighbours[v]) {
+      if ( !vis[neighbour] ){
+        vis[neighbour] = true;
+        wordJ[neighbour] = wordJ[v] + 1;
+        if (neighbour == to){
+          return wordJ[neighbour];
         }
-
-        queue.push_back(nodes[neighbour]);
+        queue.push(neighbour);
       }
     }
   }
-  // std::list<std::string> noPath;
-  // return noPath;
   return -1;
 }
 
 int main(int argc, char *argv[]) {
   std::ios::sync_with_stdio(0);
   std::cin.tie(0);
-  // const clock_t begin1 = clock();
+  const clock_t begin1 = clock();
   std::string filename = argv[1];
   filename = first_numberstring(filename);
   std::stringstream iss(filename);
   iss >> n;
-  nodes.resize(n);
-  // visited.resize(n);
+  words.resize(n);
+  wordJ.resize(n);
+  wordNeighbours.resize(n);
   std::pair<std::string, std::string> wordpair;
   char str1 [6];
   char str2 [6];
@@ -140,8 +113,7 @@ int main(int argc, char *argv[]) {
   int at = 0;
   while (fscanf (pFile, "%s", str1) != EOF){
     std::string temp = str1;
-    std::vector<int> neigh(n, 0);
-    nodes[at] = new Node(temp, neigh);
+    words[at] = temp;
     nameToIndex.insert(make_pair(temp,at));
     at++;
   }
@@ -152,31 +124,23 @@ int main(int argc, char *argv[]) {
     wordpairs.push_back(wordpair);
   }
   fclose(pFile);
-  // const clock_t end1 = clock();
-  // const clock_t begin2 = clock();
+  const clock_t end1 = clock();
+  const clock_t begin2 = clock();
   calcConnections(n);
-  // const clock_t end2 = clock();
-  // const clock_t begin3 = clock();
-  std::list<int> done;
+  const clock_t end2 = clock();
+  const clock_t begin3 = clock();
+  int done[wordpairs.size()];
+  bool visited[n];
+  at = 0;
   for (std::pair<std::string, std::string> pair : wordpairs){
-    // std::list<std::string> soul = bfsALGO(*nodes[nameToIndex[pair.first]], *nodes[nameToIndex[pair.second]]);
-    int soul = bfsALGO(*nodes[nameToIndex[pair.first]], *nodes[nameToIndex[pair.second]]);
-    // int hejd = soul.size();
-    done.push_back(soul);
-    // visited.clear();
-    // visited.resize(n);
-    // for (int i = 0; i < nodes.size(); i++) {
-    //   (*nodes[i]).visited = false;
-    //   (*nodes[i]).numJ = 0;
-    //   // (*nodes[i]).prevs.clear();
-    // }
+    done[at] = bfsALGO(nameToIndex[pair.first], nameToIndex[pair.second], visited);
+    at++;
   }
-  // const clock_t end3 = clock();
-  for (auto i : done){
-    // printf("%d\n", i);
-    std::cout << i << '\n';
+  const clock_t end3 = clock();
+  for (int i = 0; i < wordpairs.size(); i++) {
+    std::cout << done[i] << '\n';
   }
-  // std::cout << "READ: " << (end1-begin1)/double(CLOCKS_PER_SEC) << '\n';
-  // std::cout << "CALC: " << (end2-begin2)/double(CLOCKS_PER_SEC) << '\n';
-  // std::cout << "ALGO: " << (end3-begin3)/double(CLOCKS_PER_SEC) << '\n';
+  std::cout << "READ: " << (end1-begin1)/double(CLOCKS_PER_SEC) << '\n';
+  std::cout << "CALC: " << (end2-begin2)/double(CLOCKS_PER_SEC) << '\n';
+  std::cout << "ALGO: " << (end3-begin3)/double(CLOCKS_PER_SEC) << '\n';
 }

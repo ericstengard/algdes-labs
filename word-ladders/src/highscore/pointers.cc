@@ -12,6 +12,7 @@
 #include <map>
 #include <unordered_map>
 int n;
+bool T = true;
 std::list<std::pair<std::string,std::string> > wordpairs;
 std::vector<std::string> words;
 std::unordered_map<std::string,int> wordJ;
@@ -62,7 +63,7 @@ int bfsALGO(std::string const & from, std::string const & to){
   if ( from.compare(to) == 0 ){
     return 0;
   }
-  visited[nameToIndex[from]] = true;
+  visited[nameToIndex[from]] = &T;
   if (neighbourss[from][nameToIndex[to]] == 1){
     return 1;
   }
@@ -71,7 +72,7 @@ int bfsALGO(std::string const & from, std::string const & to){
     queue.pop_front();
     for (std::string neighbour : neighbours[v]) {
       if ( !visited[nameToIndex[neighbour]] ){
-        visited[nameToIndex[neighbour]] = true;
+        visited[nameToIndex[neighbour]] = &T;
         wordJ[neighbour] = wordJ[v];
         wordJ[neighbour] ++;
         if (neighbourss[neighbour][nameToIndex[to]] == 1){
