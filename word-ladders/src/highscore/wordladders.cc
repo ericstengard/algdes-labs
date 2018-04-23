@@ -12,6 +12,7 @@
 #include <map>
 #include <unordered_map>
 #include <queue>
+#include <algorithm>
 
 int n;
 std::vector<std::pair<std::string,std::string> > wordpairs;
@@ -22,9 +23,7 @@ std::vector<std::vector<int> > wordNeighbours;
 std::vector<int> wordJ;
 
 void addPossibleArc(int i, int j) {
-  // if(i == j){
-  //   return;
-  // }
+  wordNeighbours[i].reserve(77);
   std::string from = words[i];
   std::string to = words[j];
   from.erase(0,1);
@@ -46,11 +45,9 @@ void calcConnections(int size) {
     std::unordered_map<std::string,std::vector<int> >::const_iterator got = calcW.find(sorted);
     if ( got == calcW.end() ){
       for(int j = 0; j < size; j++) {
-        // if(i != j) {
           addPossibleArc(i,j);
-        // }
       }
-      calcW.insert(std::make_pair<std::string,std::vector<int> >(sorted, wordNeighbours[i]));
+      calcW.insert(make_pair(sorted, wordNeighbours[i]));
     } else {
       wordNeighbours[i] = calcW[sorted];
     }
@@ -97,7 +94,7 @@ int bfsALGO(int from, int to, bool vis[]){
 int main(int argc, char *argv[]) {
   std::ios::sync_with_stdio(0);
   std::cin.tie(0);
-  const clock_t begin1 = clock();
+  // const clock_t begin1 = clock();
   std::string filename = argv[1];
   filename = first_numberstring(filename);
   std::stringstream iss(filename);
@@ -124,11 +121,11 @@ int main(int argc, char *argv[]) {
     wordpairs.push_back(wordpair);
   }
   fclose(pFile);
-  const clock_t end1 = clock();
-  const clock_t begin2 = clock();
+  // const clock_t end1 = clock();
+  // const clock_t begin2 = clock();
   calcConnections(n);
-  const clock_t end2 = clock();
-  const clock_t begin3 = clock();
+  // const clock_t end2 = clock();
+  // const clock_t begin3 = clock();
   int done[wordpairs.size()];
   bool visited[n];
   at = 0;
@@ -136,11 +133,11 @@ int main(int argc, char *argv[]) {
     done[at] = bfsALGO(nameToIndex[pair.first], nameToIndex[pair.second], visited);
     at++;
   }
-  const clock_t end3 = clock();
+  // const clock_t end3 = clock();
   for (int i = 0; i < wordpairs.size(); i++) {
     std::cout << done[i] << '\n';
   }
-  std::cout << "READ: " << (end1-begin1)/double(CLOCKS_PER_SEC) << '\n';
-  std::cout << "CALC: " << (end2-begin2)/double(CLOCKS_PER_SEC) << '\n';
-  std::cout << "ALGO: " << (end3-begin3)/double(CLOCKS_PER_SEC) << '\n';
+  // std::cout << "READ: " << (end1-begin1)/double(CLOCKS_PER_SEC) << '\n';
+  // std::cout << "CALC: " << (end2-begin2)/double(CLOCKS_PER_SEC) << '\n';
+  // std::cout << "ALGO: " << (end3-begin3)/double(CLOCKS_PER_SEC) << '\n';
 }
