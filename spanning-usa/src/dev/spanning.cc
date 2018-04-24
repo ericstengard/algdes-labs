@@ -92,19 +92,27 @@ struct DisjointSets
     }
 
     // Union by rank
-    void merge(int x, int y)
+    int merge(int x, int y)
     {
         x = find(x), y = find(y);
 
         /* Make tree with smaller height
            a subtree of the other tree  */
-        if (rnk[x] > rnk[y])
+        if (rnk[x] > rnk[y]){
             parent[y] = x;
-        else // If rnk[x] <= rnk[y]
+            rnk[x] = rnk[y] + rnk[x] + 1;
+            return rnk[x];
+          }
+        else {// If rnk[x] <= rnk[y]
             parent[x] = y;
+            rnk[y] = rnk[y] + rnk[x] + 1;
+            return rnk[y];
+            // rnk[y]++;
+            // return rnk[y];
+          }
 
-        if (rnk[x] == rnk[y])
-            rnk[y]++;
+        // if (rnk[x] == rnk[y])
+        //     rnk[y]++;
     }
 };
 
@@ -143,7 +151,11 @@ int Graph::kruskalMST()
             mst_wt += it->first;
 
             // Merge two sets
-            ds.merge(set_u, set_v);
+            // ds.merge(set_u, set_v);
+            if (ds.merge(set_u, set_v) > V-2){
+              // std::cout << "hej" << '\n';
+              break;
+            }
         }
     }
 
@@ -160,8 +172,8 @@ int main(int argc, char *argv[])
      int at = 0;
      size_t pos = 0;
      // Cnames.resize(128);
-     names.reserve(200000);
-     connections.reserve(200000);
+     names.reserve(20000);
+     connections.reserve(20000);
      while (fgets (str , 100 , pFile) != NULL){
        std::string name = str;
        pos = name.find("--");
