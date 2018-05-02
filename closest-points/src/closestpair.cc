@@ -1,6 +1,17 @@
 // A divide and conquer program in C++ to find the smallest distance from a
 // given set of points.
 
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <list>
+#include <vector>
+#include <stdio.h>
+#include <set>
+#include <unordered_set>
+#include <cstddef>
+#include <map>
+#include <unordered_map>
 #include <iostream>
 #include <float.h>
 #include <stdlib.h>
@@ -144,28 +155,61 @@ float closest(Point P[], int n)
   // Use recursive function closestUtil() to find the smallest distance
   return closestUtil(Px, Py, n);
 }
+bool is_digits(const std::string &str)
+{
+    return str.find_first_not_of("0123456789 -.") == std::string::npos;
+}
+
+std::vector<Point> points;
 
 // Driver program to test above functions
-int main()
+int main(int argc, char *argv[])
 {
-  // std::ifstream ifs ("test.txt", std::ifstream::binary);
-  //
-  // // get pointer to associated buffer object
-  // std::filebuf* pbuf = ifs.rdbuf();
-  //
-  // // get file size using buffer's members
-  // std::size_t size = pbuf->pubseekoff (0,ifs.end,ifs.in);
-  // pbuf->pubseekpos (0,ifs.in);
-  //
-  // // allocate memory to contain file data
-  // char* buffer=new char[size];
-  //
-  // // get file data
-  // pbuf->sgetn (buffer,size);
-  //
-  // ifs.close();
+  std::ifstream ifs (argv[1], std::ifstream::binary);
 
-  Point P[] = {{2.2, 3}, {12, 30}, {40, 50.33}, {5, 1}, {12, 10}, {3, 4}};
+  // get pointer to associated buffer object
+  std::filebuf* pbuf = ifs.rdbuf();
+
+  // get file size using buffer's members
+  std::size_t size = pbuf->pubseekoff (0,ifs.end,ifs.in);
+  pbuf->pubseekpos (0,ifs.in);
+
+  // allocate memory to contain file data
+  char* buffer=new char[size];
+
+  // get file data
+  pbuf->sgetn (buffer,size);
+
+  ifs.close();
+
+  std::string text = buffer;
+
+  std::istringstream iss(text);
+  std::string line;
+  int N = 0;
+  double hane;
+  double X;
+  double Y;
+
+  while (std::getline(iss, line)) {
+    if (is_digits(line)){
+      std::stringstream iss(line);
+      iss >> hane;
+      iss >> X;
+      iss >> Y;
+      N++;
+      Point p;
+      p.x = X;
+      p.y = Y;
+      points.push_back(p);
+    }
+  }
+
+  Point P[N];
+  for (int i = 0; i < points.size(); i++){
+    P[i] = points.at(i);
+  }
+
   int n = sizeof(P) / sizeof(P[0]);
   cout << "The smallest distance is: " << closest(P, n) << '\n';
   return 0;
