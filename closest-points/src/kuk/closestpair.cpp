@@ -83,7 +83,10 @@ double closest(Points &v)
 
 bool is_digits(const std::string &str)
 {
-    return str.find_first_not_of("0123456789 -.eE+") == std::string::npos;
+    // %O%F%
+    std::size_t found = str.find_first_not_of("0123456789 -.,eE+\v\r\t\n\f");
+    //return str.find_first_not_of("0123456789 -.,eE+") == std::string::npos;
+    return found == std::string::npos;
 }
 
 int main(int argc, char * argv[])
@@ -114,29 +117,43 @@ int main(int argc, char * argv[])
     std::string line;
     int N = 0;
     double hane;
-    double X;
-    double Y;
+    //double X;
+    //double Y;
+    std::string temp;
 
     while (std::getline(iss, line)) {
-        if (is_digits(line))
-        {
+        if(line.compare("EOF") == 0){
+            break;
+        }
+        if (is_digits(line)) {
             std::stringstream iss(line);
+            double X;
+            double Y;
             iss >> hane;
             iss >> X;
             iss >> Y;
+            if(iss.fail()){
+                continue;
+            }
             N++;
             Point p;
             p.x = X;
             p.y = Y;
             points.push_back(p);
+            temp = line;
         }
     }
+    /*
+    for(auto p : points){
+        std::cout << p.x << " " << p.y << '\n';
+    }
+     */
 
     double ret = closest(points);
     if (ret == __DBL_MAX)
         return -1;
 
-    std::cout << std::setprecision(std::numeric_limits<double>::digits10) << ret << std::endl;
+    std::cout << argv[1] << ": "<< points.size()  << " " << std::setprecision(std::numeric_limits<double>::digits10) << ret << '\n';
 
     return 0;
 }
