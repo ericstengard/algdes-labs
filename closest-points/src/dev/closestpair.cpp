@@ -1,3 +1,9 @@
+/*
+	Author: Kevin Bacon
+	Date: 04/03/2014
+	Task: Closest-pair problem
+*/
+
 #include <iostream>
 #include <vector>
 #include <utility>
@@ -87,6 +93,12 @@ std::pair<double, points_t> find_closest_optimized(const std::vector<point_t>& x
     return result;
 }
 
+void print_point(const point_t& point) {
+    std::cout << "(" << point.first
+              << ", " << point.second
+              << ")";
+}
+
 bool is_digits(const std::string &str)
 {
     return str.find_first_not_of("0123456789 -.") == std::string::npos;
@@ -138,10 +150,6 @@ int main(int argc, char * argv[]) {
         }
     }
 
-    for(auto p : points){
-        std::cout << p.first << " " << p.second << '\n';
-    }
-
     std::sort(std::begin(points), std::end(points), [](const point_t& a, const point_t& b) {
         return a.first < b.first;
     });
@@ -151,8 +159,16 @@ int main(int argc, char * argv[]) {
     });
     auto yP = points;
 
-
     auto answer = find_closest_optimized(xP, yP);
-    std::cout << answer.first << '\n';
+
+    std::cout << "Min distance (brute): " << answer.first << " ";
+    print_point(answer.second.first);
+    std::cout << ", ";
+    print_point(answer.second.second);
+    answer = find_closest_optimized(xP, yP);
+    std::cout << "\nMin distance (optimized): " << answer.first << " ";
+    print_point(answer.second.first);
+    std::cout << ", ";
+    print_point(answer.second.second);
     return 0;
 }
