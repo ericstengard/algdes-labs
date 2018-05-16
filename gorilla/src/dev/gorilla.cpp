@@ -17,12 +17,6 @@
 
 #define MAX_N 1001
 
-#define DPRINTC(C) printf(#C " = %c\n", (C))
-#define DPRINTS(S) printf(#S " = %s\n", (S))
-#define DPRINTD(D) printf(#D " = %d\n", (D))
-#define DPRINTLLD(LLD) printf(#LLD " = %lld\n", (LLD))
-#define DPRINTLF(LF) printf(#LF " = %.5lf\n", (LF))
-
 using namespace std;
 typedef long long lld;
 typedef unsigned long long llu;
@@ -154,38 +148,60 @@ int main(int argc, char **argv)
 
   std::fstream FILE;
   FILE.open(argv[1]);
-  std::string name = "", amino = "", line;
+  std::string name = "", amino = "", A, B, whole, line;
   int at = 1;
   bool first = true;
-  std::vector<std::pair<std::string, std::string> > things;
+  int names, t;
+  std::unordered_map<std::string, std::string> things;
+  std::vector<string> v;
   for (int i = 0; std::getline(FILE, line); i++){
-    if (line[0] == '>'){
-      if (!first){
-        things.push_back(make_pair(name, amino));
-        name = "";
-        amino = "";
-        at = 1;
-      }
-      first = false;
-      while (line[at] != ' '){
-        name += line[at];
-        at++;
-      }
-    } else { amino += line; }
-  }
-  things.push_back(make_pair(name, amino));
-
-  for (int i = 0; i < things.size(); i++){
-    for (int j = i + 1; j < things.size(); j++){
-      std::string A = things.at(i).second;
-      std::string B = things.at(j).second;
-      int n = A.length(), m = B.length();
-      std::cout << things.at(i).first << "--" << things.at(j).first << ": ";
-      printf("%d\n",needleman_wunsch(A, B, n, m));
-      pair<string, string> alignment = get_optimal_alignment(A, B, n, m);
-      printf("%s\n%s\n", alignment.first.c_str(), alignment.second.c_str());
+    if (i == 0){
+      std::stringstream iss( line );
+      iss >> names;
+    } else if (i < names+1){
+      name = line;
+      std::getline(FILE, line);
+      amino = line;
+      things.insert(make_pair(name, amino));
+    } else {
+      std::stringstream iss( line );
+      iss >> A;
+      iss >> B;
+      // std::cout << A << "--" << B << ": ";
+      // printf("%d\n",needleman_wunsch(things.at(A), things.at(B), things.at(A).length(), things.at(B).length()));
+      whole = A + "--" + B + ": " + std::to_string(needleman_wunsch(things.at(A), things.at(B), things.at(A).length(), things.at(B).length()));
+      v.push_back(whole);
     }
+    // else if (line[0] == '>'){
+    //   if (!first){
+    //     things.push_back(make_pair(name, amino));
+    //     name = "";
+    //     amino = "";
+    //     at = 1;
+    //   }
+    //   first = false;
+    //   while (line[at] != ' '){
+    //     name += line[at];
+    //     at++;
+    //   }
+    // } else { amino += line; }
   }
+
+  for (auto i : v){
+    std::cout << i << '\n';
+  }
+
+  // for (int i = 0; i < things.size(); i++){
+  //   for (int j = i + 1; j < things.size(); j++){
+  //     std::string A = things.at(i).second;
+  //     std::string B = things.at(j).second;
+  //     int n = A.length(), m = B.length();
+  //     std::cout << things.at(i).first << "--" << things.at(j).first << ": ";
+  //     printf("%d\n",needleman_wunsch(A, B, n, m));
+  //     pair<string, string> alignment = get_optimal_alignment(A, B, n, m);
+  //     printf("%s\n%s\n", alignment.first.c_str(), alignment.second.c_str());
+  //   }
+  // }
 
   return 0;
 }
