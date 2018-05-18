@@ -124,6 +124,6 @@ int main(int argc, char **argv)
     }
 
     int result = fordFulkerson(graph, 0, V-1);
-    cout << "The maximum possible flow is " << result << '\n';
+    cout << result << '\n';
     return 0;
 }
