@@ -3,10 +3,16 @@
 #include <limits.h>
 #include <string.h>
 #include <queue>
+#include <sstream>
+#include <fstream>
+#include <limits.h>
+
 using namespace std;
 
+
 // Number of vertices in given graph
-int V;
+//int V;
+#define V 55
 
 /* Returns true if there is a path from source 's' to sink 't' in
   residual graph. Also fills parent[] to store the path */
@@ -95,35 +101,29 @@ int fordFulkerson(int graph[V][V], int s, int t)
 }
 
 // Driver program to test above functions
-int main()
+int main(int argc, char **argv)
 {
     std::fstream FILE;
     FILE.open(argv[1]);
     std::string line;
     std::getline(FILE, line);
     int from,to,cost;
-    std::stringstream iss( line );
-    iss >> V;
-    int graph[V][V];
+    int graph [V][V] = {0};
     for (int i = 0; std::getline(FILE, line); i++) {
-      if (i > names) {
+      if (i > V) {
         std::stringstream iss( line );
         iss >> from;
         iss >> to;
         iss >> cost;
-        graph[from][to] = cost;
+        if(cost < 0){
+            cost = INT_MAX;
+        }
+          graph[from][to] = cost;
+          graph[to][from] = cost;
       }
     }
-    // Let us create a graph shown in the above example
-    // int graph[V][V] = { {0, 16, 13, 0, 0, 0},
-    //                     {0, 0, 10, 12, 0, 0},
-    //                     {0, 4, 0, 0, 14, 0},
-    //                     {0, 0, 9, 0, 0, 20},
-    //                     {0, 0, 0, 7, 0, 4},
-    //                     {0, 0, 0, 0, 0, 0}
-    //                   };
 
-    cout << "The maximum possible flow is " << fordFulkerson(graph, 0, names-1);
-
+    int result = fordFulkerson(graph, 0, V-1);
+    cout << "The maximum possible flow is " << result << '\n';
     return 0;
 }
